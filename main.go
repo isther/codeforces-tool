@@ -6,12 +6,14 @@ import (
 	"github.com/28251536/codeforces-tool/config"
 )
 
-const configPath = "./config.json"
-const clnPath = "./session.json"
+const configPath = "~/.cfs/config"
+const clnPath = "~/.cfs/session"
 
 func init() {
 	config.Init(configPath)
 	client.Init(clnPath, config.Instance.Host)
+
+	cmd.ParseArgs()
 }
 
 func main() {

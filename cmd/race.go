@@ -24,10 +24,8 @@ func Race() (err error) {
 	cfg := config.Instance
 	cln := client.Instance
 
-	info := client.Info{
-		ProblemType: problemType,
-		ContestID:   contestID,
-	}
+	info := Args.Info
+	info.ContestID = contestID
 
 	if err = cln.RaceContest(info); err != nil {
 		if err = loginAgain(cln, err); err == nil {

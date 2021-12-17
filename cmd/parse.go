@@ -17,10 +17,8 @@ var parseCmd = &cobra.Command{
 func Parse() (err error) {
 	cln := client.Instance
 
-	info := client.Info{
-		ProblemType: problemType,
-		ContestID:   contestID,
-	}
+	info := Args.Info
+	info.ContestID = contestID
 
 	work := func() error {
 		_, _, err = cln.Parse(info)

@@ -1,10 +1,72 @@
 package cmd
 
-import "github.com/spf13/cobra"
+import (
+	"bufio"
+	"bytes"
+	"io"
+	"strings"
+
+	"github.com/28251536/codeforces-tool/client"
+	"github.com/fatih/color"
+	"github.com/k0kubun/go-ansi"
+	"github.com/olekukonko/tablewriter"
+	"github.com/spf13/cobra"
+)
 
 var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "Get list of contest",
 	Long:  "Get the list of questions and the status of the questions",
-	Run:   func(cmd *cobra.Command, args []string) {},
+	Run: func(cmd *cobra.Command, args []string) {
+		err := List()
+		if err != nil {
+			color.Red("List problem failed")
+		}
+	},
+}
+
+func List() (err error) {
+	cln := client.Instance
+	info := Args.Info
+	problems, err := cln.Statis(info)
+	if err != nil {
+		if err = loginAgain(cln, err); err == nil {
+			problems, err = cln.Statis(info)
+		}
+	}
+	if err != nil {
+		return
+	}
+	var buf bytes.Buffer
+	output := io.Writer(&buf)
+	table := tablewriter.NewWriter(output)
+	table.SetHeader([]string{"#", "problem", "passed", "limit", "IO"})
+	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
+	table.SetAlignment(tablewriter.ALIGN_CENTER)
+	table.SetCenterSeparator("|")
+	table.SetAutoWrapText(false)
+	for _, prob := range problems {
+		table.Append([]string{
+			prob.ID,
+			prob.Name,
+			prob.Passed,
+			prob.Limit,
+			prob.IO,
+		})
+	}
+	table.Render()
+
+	scanner := bufio.NewScanner(io.Reader(&buf))
+	for i := -2; scanner.Scan(); i++ {
+		line := scanner.Text()
+		if i >= 0 {
+			if strings.Contains(problems[i].State, "accepted") {
+				line = color.New(color.BgGreen).Sprint(line)
+			} else if strings.Contains(problems[i].State, "rejected") {
+				line = color.New(color.BgRed).Sprint(line)
+			}
+		}
+		ansi.Println(line)
+	}
+	return
 }

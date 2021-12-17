@@ -38,6 +38,7 @@ func init() {
 	rootCmd.AddCommand(raceCmd)
 	rootCmd.AddCommand(testCmd)
 	rootCmd.AddCommand(submitCmd)
+	rootCmd.AddCommand(listCmd)
 
 	// testCmd.Flags().IntVarP(&n, "number", "n", 1, "input number")
 	raceCmd.Flags().StringVarP(&contestID, "contestId", "c", "", "The id of the match you want to parse")
@@ -87,7 +88,7 @@ type CodeList struct {
 	Index []int
 }
 
-func getCode(filename string, templates []config.CodeTemplate) (codes []CodeList, err error) {
+func getCode(templates []config.CodeTemplate) (codes []CodeList, err error) {
 	mp := make(map[string][]int)
 	for i, temp := range templates {
 		suffixMap := map[string]bool{}
@@ -98,14 +99,6 @@ func getCode(filename string, templates []config.CodeTemplate) (codes []CodeList
 				mp[sf] = append(mp[sf], i)
 			}
 		}
-	}
-
-	if filename != "" {
-		ext := filepath.Ext(filename)
-		if idx, ok := mp[ext]; ok {
-			return []CodeList{CodeList{filename, idx}}, nil
-		}
-		return nil, fmt.Errorf("%v can not match any template. You could add a new template by `cf config`", filename)
 	}
 
 	path, err := os.Getwd()
@@ -128,8 +121,8 @@ func getCode(filename string, templates []config.CodeTemplate) (codes []CodeList
 	return codes, nil
 }
 
-func getOneCode(filename string, templates []config.CodeTemplate) (name string, index int, err error) {
-	codes, err := getCode(filename, templates)
+func getOneCode(templates []config.CodeTemplate) (name string, index int, err error) {
+	codes, err := getCode(templates)
 	if err != nil {
 		return
 	}

@@ -18,17 +18,17 @@ var (
   You can insert some placeholders into your template code. When generate a code from the
   template, cf will replace all placeholders by following rules:
 
-  $\%U%$   Handle (e.g. ther)
-  $\%Y%$   Year   (e.g. 2021)
-  $\%M%$   Month  (e.g. 12)
-  $\%D%$   Day    (e.g. 11)
-  $\%h%$   Hour   (e.g. 13)
-  $\%m%$   Minute (e.g. 30)
-  $\%s%$   Second (e.g. 05)
-  $\%path%$   Path to source file (Excluding $\%full%$, e.g. "/home/ther/codeforces/contest/1806")
-  $\%full%$   Full name of source file (e.g. "a.cpp")
-  $\%file%$   Name of source file (Excluding suffix, e.g. "a")
-  $\%rand%$   Random string with 8 character (including "a-z" "0-9") `
+  $%U%$   Handle (e.g. ther)
+  $%Y%$   Year   (e.g. 2021)
+  $%M%$   Month  (e.g. 12)
+  $%D%$   Day    (e.g. 11)
+  $%h%$   Hour   (e.g. 13)
+  $%m%$   Minute (e.g. 30)
+  $%s%$   Second (e.g. 05)
+  $%path%$   Path to source file (Excluding $%full%$, e.g. "/home/ther/codeforces/contest/1806")
+  $%full%$   Full name of source file (e.g. "a.cpp")
+  $%file%$   Name of source file (Excluding suffix, e.g. "a")
+  $%rand%$   Random string with 8 character (including "a-z" "0-9") `
 
 	scriptNote = `
 Template will run 3 scripts in sequence when you run "cf test":
@@ -41,10 +41,10 @@ Template will run 3 scripts in sequence when you run "cf test":
   You can insert some placeholders in your scripts. When execute a script,
   cf will replace all placeholders by following rules:
 
-  $\%path%$   Path to source file (Excluding $\%full%$, e.g. "/home/28251536/")
-  $\%full%$   Full name of source file (e.g. "a.cpp")
-  $\%file%$   Name of source file (Excluding suffix, e.g. "a")
-  $\%rand%$   Random string with 8 character (including "a-z" "0-9")
+  $%path%$   Path to source file (Excluding $%full%$, e.g. "/home/28251536/")
+  $%full%$   Full name of source file (e.g. "a.cpp")
+  $%file%$   Name of source file (Excluding suffix, e.g. "a")
+  $%rand%$   Random string with 8 character (including "a-z" "0-9")
 `
 )
 

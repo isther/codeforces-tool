@@ -23,16 +23,16 @@ var egList = map[string]string{
 	"alias":        `e.g. "cpp" "py"`,
 	"email":        `e.g. "28251536@qq.com"`,
 	"password":     `e.g. "1234567890"`,
-	"beforeScript": `e.g. "g++ $\%full%$ -o $\%file%$.exe -std=c++11"), empty is ok:`,
-	"script":       `"./$\%file%$.exe" "python3 $\%full%$"):`,
-	"afterScript":  `"rm $%\file%$.exe" or "cmd.exe /C del $\%file%$.exe" in windows), empty is ok:`,
+	"beforeScript": `e.g. "g++ $%full%$ -o $%file%$.exe -std=c++11"), empty is ok:`,
+	"script":       `"./$%file%$.exe" "python3 $%full%$"):`,
+	"afterScript":  `"rm $%file%$.exe" or "cmd.exe /C del $%file%$.exe" in windows), empty is ok:`,
 }
 
 var tipList = map[string]string{
 	"langs":        `Please enter index of language`,
 	"templatepath": `Please enter the path of the template file`,
 	"suffix": `The suffix of template above will be added by default.
-					Other suffix?, empty is ok`,
+Other suffix?, empty is ok`,
 	"alias":        `Template's alias`,
 	"email":        `Please enter your email`,
 	"password":     `Please enter your password`,
@@ -43,7 +43,7 @@ var tipList = map[string]string{
 
 func ChooseString(eg string) string {
 	ti := textinput.NewModel()
-	ti.Placeholder = fmt.Sprintf(egList[eg])
+	ti.Placeholder = egList[eg]
 	ti.Focus()
 	ti.CharLimit = 156
 	ti.Width = 20

@@ -33,11 +33,11 @@ func Gen() (err error) {
 		return errors.New("You have to add at least one code template by `cf config`")
 	}
 
-	path := cfg.Template[cfg.Default].Path
+	//Get template path
+	tempPath := cfg.Template[cfg.Default].Path
 	cln := client.Instance
 
-	fmt.Println(1)
-	source, err := readTemplateSource(path, cln)
+	source, err := readTemplateSource(tempPath, cln)
 	if err != nil {
 		color.Red("Read template source filed")
 		return
@@ -48,7 +48,7 @@ func Gen() (err error) {
 		return
 	}
 
-	ext := filepath.Ext(path)
+	ext := filepath.Ext(tempPath)
 	return gen(source, currentPath, ext)
 }
 
@@ -57,10 +57,12 @@ func readTemplateSource(path string, cln *client.Client) (source string, err err
 	if err != nil {
 		return
 	}
+
 	source = parseTemplate(string(b), cln)
 	return
 }
 
+//Parse template. Parse special parameters.
 func parseTemplate(source string, cln *client.Client) string {
 	now := time.Now()
 	source = strings.ReplaceAll(source, "$%U%$", cln.Handle)

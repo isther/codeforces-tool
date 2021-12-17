@@ -43,7 +43,7 @@ func Test() (err error) {
 	if len(samples) == 0 {
 		return errors.New("Cannot find any sample file")
 	}
-	filename, index, err := getOneCode("", cfg.Template)
+	filename, index, err := getOneCode(cfg.Template)
 	if err != nil {
 		return
 	}
