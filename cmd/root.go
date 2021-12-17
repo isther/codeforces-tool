@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	version = "v0.1.0"
+	version = "v1.0.0"
 
 	rootCmd = &cobra.Command{
 		Use:     "cf",
