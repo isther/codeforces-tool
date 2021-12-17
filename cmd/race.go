@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/28251536/codeforces-tool/client"
@@ -11,11 +10,13 @@ import (
 
 var raceCmd = &cobra.Command{
 	Use:   "race",
-	Short: "Parsing questions",
+	Short: "Parsing contest",
 	Long:  "Parsing questions of the contest, download the sample to the local",
-	// Args:  cobra.MinimumNArgs(1),
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(contestID)
+		// fmt.Println(contestID)
+		// fmt.Println(args)
+		contestID = args[0]
 		Race()
 	},
 }
@@ -36,12 +37,13 @@ func Race() (err error) {
 		}
 	}
 
-	time.Sleep(1)
-	URL, err := info.ProblemSetURL(cfg.Host)
+	time.Sleep(100 * time.Millisecond)
+	// URL, err := info.ProblemSetURL(cfg.Host)
+	_, err = info.ProblemSetURL(cfg.Host)
 	if err != nil {
 		return
 	}
-	openURL(URL)
-	openURL(URL + "/problems")
+	// openURL(URL)
+	// openURL(URL + "/problems")
 	return Parse()
 }

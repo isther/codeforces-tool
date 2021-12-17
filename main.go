@@ -1,16 +1,25 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/28251536/codeforces-tool/client"
 	"github.com/28251536/codeforces-tool/cmd"
 	"github.com/28251536/codeforces-tool/config"
+	"github.com/28251536/codeforces-tool/util"
 )
 
-const configPath = "~/.cfs/config"
-const clnPath = "~/.cfs/session"
+const configPath = "/.cf/config"
+const clientPath = "/.cf/session"
 
 func init() {
-	config.Init(configPath)
+	home, _ := util.Home()
+	cfgPath := fmt.Sprintf("%v%v", home, configPath)
+	clnPath := fmt.Sprintf("%v%v", home, clientPath)
+	// fmt.Printf("cfg = %v", cfgPath)
+	// fmt.Printf("cln = %v", clnPath)
+
+	config.Init(cfgPath)
 	client.Init(clnPath, config.Instance.Host)
 
 	cmd.ParseArgs()

@@ -126,10 +126,6 @@ func (c *Client) Parse(info Info) (problems []string, paths []string, err error)
 		paths[i] = filepath.Join(contestPath, strings.ToLower(problemID))
 		go func(problemID, path string) {
 			defer wg.Done()
-			mu.Lock()
-			fmt.Printf("Parsing %v\n", problemID)
-			mu.Unlock()
-
 			err = os.MkdirAll(path, os.ModePerm)
 			if err != nil {
 				return

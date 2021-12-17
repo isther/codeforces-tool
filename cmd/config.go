@@ -9,8 +9,8 @@ import (
 
 var configCmd = &cobra.Command{
 	Use:   "config",
-	Short: "Config file",
-	Long:  "Config file of tool",
+	Short: "setting profile",
+	Long:  "Set up some necessary configurations, such as account information, templates, submission information, etc.",
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg := config.Instance
 		cln := client.Instance

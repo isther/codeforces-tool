@@ -16,21 +16,19 @@ import (
 )
 
 var (
-	version = "v0.0.1"
+	version = "v0.1.0"
 
 	rootCmd = &cobra.Command{
 		Use:     "cf",
 		Version: version,
 		Short:   "A cmd tool for codeforces contest",
-		Long: `This is a cmd tool for codeforces contest, 
-		it will be help you to create direcory 、download example of problem、
-		test for problem、submit problem...
-		Good lucky!`,
+		Long:    `This is a cmd tool for codeforces contest, it will be help you to create direcory、download example of problem、test for problem、submit problem...Good lucky!`,
 	}
 )
 
 var contestID string
-var problemType = "contest"
+
+// var problemType = "contest"
 
 func init() {
 	rootCmd.AddCommand(configCmd)
@@ -41,7 +39,7 @@ func init() {
 	rootCmd.AddCommand(listCmd)
 
 	// testCmd.Flags().IntVarP(&n, "number", "n", 1, "input number")
-	raceCmd.Flags().StringVarP(&contestID, "contestId", "c", "", "The id of the match you want to parse")
+	// raceCmd.Flags().StringVarP(&contestID, "contestId", "c", "", "The id of the match you want to parse")
 }
 
 func Execute() error {
