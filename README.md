@@ -22,6 +22,8 @@ This is a tool for codeforces, currently under development...
 
 - Get the status of the question✅
 
+- Get the schedule of the contest✅
+
 Good luck in the codeforces contest!
 
 ## How to use
@@ -40,3 +42,5 @@ First you should log in and add the template
 - `cf submit`: Submit the source code of the current problem
 
 - `cf list`: Get a list of current matches and problem status
+
+- `cf skd`: Get the schedule of the contest

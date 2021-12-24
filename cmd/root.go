@@ -37,6 +37,7 @@ func init() {
 	rootCmd.AddCommand(testCmd)
 	rootCmd.AddCommand(submitCmd)
 	rootCmd.AddCommand(listCmd)
+	rootCmd.AddCommand(skdCmd)
 
 	// testCmd.Flags().IntVarP(&n, "number", "n", 1, "input number")
 	// raceCmd.Flags().StringVarP(&contestID, "contestId", "c", "", "The id of the match you want to parse")
