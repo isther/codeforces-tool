@@ -1,118 +1,83 @@
 package client
 
 import (
+	"encoding/json"
 	"fmt"
-	"log"
+	"io/ioutil"
 	"net/http"
-	"strings"
-
-	"github.com/PuerkitoBio/goquery"
 )
 
-type ID struct {
-	string
+type Contest struct {
+	ID                  uint64 `json:"id"`
+	Name                string `json:"name"`
+	Type                string `json:"type"`
+	Phase               string `json:"phase"`
+	Frozen              bool   `json:"frozen"`
+	DurationSeconds     int64  `json:"durationSeconds"`
+	StartTimeSeconds    int64  `json:"startTimeSeconds"`
+	RelativeTimeSeconds int64  `json:"relativeTimeSeconds"`
 }
 
-type IDList struct {
-	ID []ID
-}
-
-type ContestInfo struct {
-	ID          string
-	Name        string
-	Start       string
-	Length      string
-	BeforeStart string
-	Link        string
+type Response struct {
+	Status string    `json:"status"`
+	Result []Contest `json:"result"`
 }
 
 var (
-	baseCodeforcesContestsUrl = "http://codeforces.com/contests/"
-	listLimit                 = 3
+	baseUrl = "http://codeforces.com/api/contest.list"
 )
 
-func (list IDList) GetContestList() (contestList []*ContestInfo) {
-	list.getContestsID()
-	// fmt.Println(list)
-
-	for _, v := range list.ID {
-		contestList = append(contestList, v.getContestInfoByID())
+func GetContest() []*Contest {
+	contest, err := getContest(baseUrl + "?contest=true")
+	if err != nil {
+		return nil
 	}
-	return contestList
-}
-
-func (list *IDList) getContestsID() {
-	url := baseCodeforcesContestsUrl
-
-	getDocument(url).Find("#pageContent .contestList .datatable table tbody tr").Each(func(i int, s *goquery.Selection) {
-		if i == 0 || i > listLimit {
-			return
-		}
-
-		id, _ := s.Attr("data-contestid")
-		list.ID = append(list.ID, ID{string: id})
-	})
-}
-
-func (id ID) getContestInfoByID() (contest *ContestInfo) {
-	url := baseCodeforcesContestsUrl + id.string
-
-	getDocument(url).Find("#pageContent .contestList .datatable table tbody tr").Each(func(i int, s *goquery.Selection) {
-		if i == 0 || i > 1 {
-			return
-		}
-
-		text := s.Find("td").Text()
-		temp := strings.Split(text, "\n")
-
-		pos := 0
-		flag := 0
-		cnt := 0
-		info := []string{}
-		for i, v := range temp {
-			v = strings.TrimSpace(v)
-			if v != "" {
-				info = append(info, v)
-				cnt++
-			}
-
-			if len(v) == len("Dec/27/2021 17:35") && flag == 0 && i != 0 {
-				pos = cnt - 1
-				flag = 1
-			}
-		}
-
-		contest = &ContestInfo{
-			ID:          id.string,
-			Name:        info[0],
-			Start:       info[pos],
-			Length:      info[pos+1],
-			BeforeStart: info[pos+2],
-			Link:        baseCodeforcesContestsUrl + id.string,
-		}
-		// fmt.Println(contest)
-	})
 	return contest
 }
 
-func getDocument(url string) *goquery.Document {
+func getContest(url string) ([]*Contest, error) {
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", url, nil)
+	// req, _ := http.NewRequest("GET", url, nil)
+	req, _ := http.NewRequest("POST", url, nil)
+
 	req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
+
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Println("Http get err:", err)
-		return nil
+		return nil, err
 	}
 	if resp.StatusCode != 200 {
 		fmt.Println("Http status code:", resp.StatusCode)
-		return nil
+		return nil, fmt.Errorf("Status error")
 	}
 	defer resp.Body.Close()
 
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	contestList, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	return doc
+
+	var r Response
+	_ = json.Unmarshal([]byte(contestList), &r)
+
+	cnt := -1
+	for i, v := range r.Result {
+		if v.Phase == "FINISHED" {
+			break
+		}
+		cnt = i
+	}
+	if cnt == -1 {
+		return nil, fmt.Errorf("Don't have contest")
+	}
+
+	var contestlist []*Contest
+
+	for i := 0; i < 3 && cnt >= 0; i++ {
+		contestlist = append(contestlist, &r.Result[cnt])
+		cnt--
+	}
+
+	return contestlist, nil
 }
