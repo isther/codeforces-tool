@@ -1,14 +1,13 @@
 # codeforces-tool
 
-<div align="center">
+**This is a tool for codeforces.**
 
+<div align="center">
 <a href="https://github.com/isther/codeforces-tool"><img src="https://img.shields.io/github/repo-size/isther/codeforces-tool?style=flat-square&label=Repo" alt="GitHub repository size"/></a>
-<a href="https://github.com/isther/codeforces-tool/blob/master/LICENSE"><img src="https://img.shields.io/github/license/isther/codeforces-tool?style=flat-square&logo=GNU&label=License" alt="License" />
+<a href="https://github.com/isther/codeforces-tool/blob/master/LICENSE"><img src="https://img.shields.io/github/license/isther/codeforces-tool?style=flat-square&logo=GNU&label=License" alt="License" /></a>
 </div>
 
-This is a tool for codeforces, currently under development...
-
-![](https://www.niuwx.cn/cloudimg/use.gif)
+![use](./image/use.gif)
 
 ## Functions
 
@@ -37,7 +36,7 @@ Good luck in the codeforces contest!
 ### config
 
 First you should log in and add the template
-![](https://www.niuwx.cn/cloudimg/login.png)
+![login](./image/login.png)
 
 ### contest
 
