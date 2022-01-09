@@ -3,6 +3,7 @@ package cmd
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -11,8 +12,11 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"syscall"
+	"time"
 	"unicode"
 
+	"github.com/28251536/codeforces-tool/client"
 	"github.com/28251536/codeforces-tool/config"
 	"github.com/28251536/codeforces-tool/util"
 	"github.com/fatih/color"
@@ -63,7 +67,6 @@ func Test() (err error) {
 
 	run := func(script string) error {
 		if s := filter(script); len(s) > 0 {
-			fmt.Println(s)
 			cmds := splitCmd(s)
 			cmd := exec.Command(cmds[0], cmds[1:]...)
 			cmd.Stdout = os.Stdout
@@ -76,9 +79,13 @@ func Test() (err error) {
 	if err = run(template.BeforeScript); err != nil {
 		return
 	}
+
+	var limit client.Limit
+	util.Load("./.config",&limit)
+
 	if s := filter(template.Script); len(s) > 0 {
 		for _, i := range samples {
-			err := judge(i, s)
+			err := judge(i, s, time.Duration(limit.TimeLimit*1000*uint64(time.Millisecond)))
 			if err != nil {
 				color.Red(err.Error())
 			}
@@ -129,7 +136,7 @@ func plain(raw []byte) string {
 	return b.String()
 }
 
-func judge(sampleID, command string) error {
+func judge(sampleID, command string, duration time.Duration) error {
 	inPath := fmt.Sprintf("./Tests/input_%v.txt", sampleID)
 	ansPath := fmt.Sprintf("./Tests/output_%v.txt", sampleID)
 	input, err := os.Open(inPath)
@@ -149,12 +156,17 @@ func judge(sampleID, command string) error {
 		return fmt.Errorf("Runtime Error #%v ... %v", sampleID, err.Error())
 	}
 
-	pid := int32(cmd.Process.Pid)
+	pid := cmd.Process.Pid
 	maxMemory := uint64(0)
 	ch := make(chan error)
 	go func() {
 		ch <- cmd.Wait()
 	}()
+
+	ctx := context.Background()
+	ctxWithTimeOut, ctxCancleFunc := context.WithTimeout(ctx, duration)
+	defer ctxCancleFunc()
+
 	running := true
 	for running {
 		select {
@@ -163,8 +175,11 @@ func judge(sampleID, command string) error {
 				return fmt.Errorf("Runtime Error #%v ... %v", sampleID, err.Error())
 			}
 			running = false
+		case <-ctxWithTimeOut.Done():
+			_ = syscall.Kill(pid, syscall.SIGKILL)
+			return fmt.Errorf("Time out")
 		default:
-			p, err := process.NewProcess(pid)
+			p, err := process.NewProcess(int32(pid))
 			if err == nil {
 				m, err := p.MemoryInfo()
 				if err == nil && m.RSS > maxMemory {

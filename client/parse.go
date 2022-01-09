@@ -2,12 +2,14 @@ package client
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"html"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -15,6 +17,11 @@ import (
 
 	"github.com/fatih/color"
 )
+
+type Limit struct {
+	TimeLimit   uint64
+	MemoryLimit uint64
+}
 
 func findSample(body []byte) (input [][]byte, output [][]byte, err error) {
 	irg := regexp.MustCompile(`class="input"[\s\S]*?<pre>([\s\S]*?)</pre>`)
@@ -35,6 +42,30 @@ func findSample(body []byte) (input [][]byte, output [][]byte, err error) {
 		output = append(output, filter(b[i][1]))
 	}
 	return
+}
+
+func findProblemLimit(body []byte) (limit *Limit, err error) {
+	timeRg := regexp.MustCompile(`time limit per test</div>[\s\S]*?second`)
+	memoryRg := regexp.MustCompile(`memory limit per test</div>[\s\S]*?megabytes`)
+	a := timeRg.FindAllSubmatch(body, -1)
+	b := memoryRg.FindAllSubmatch(body, -1)
+	if a == nil || b == nil {
+		return nil, fmt.Errorf("Cannot parse timelimit and memorylimit")
+	}
+
+	timeLimit := a[0][0]
+	memoryLimit := b[0][0]
+	timeLimit = bytes.TrimPrefix(timeLimit, []byte("time limit per test</div>"))
+	timeLimit = bytes.TrimSuffix(timeLimit, []byte(" second"))
+	memoryLimit = bytes.TrimPrefix(memoryLimit, []byte("memory limit per test</div>"))
+	memoryLimit = bytes.TrimSuffix(memoryLimit, []byte(" megabytes"))
+	time, _ := strconv.ParseUint(string(timeLimit), 10, 64)
+	memory, _ := strconv.ParseUint(string(memoryLimit), 10, 64)
+
+	return &Limit{
+		TimeLimit:   time,
+		MemoryLimit: memory,
+	}, nil
 }
 
 // ParseProblem parse problem to path. mu can be nil
@@ -58,6 +89,10 @@ func (c *Client) ParseProblem(URL, path string, mu *sync.Mutex) (samples int, st
 	if !bytes.Contains(body, []byte(`<div class="input-file"><div class="property-title">input</div>standard input</div><div class="output-file"><div class="property-title">output</div>standard output</div>`)) {
 		standardIO = false
 	}
+
+	limit, _ := findProblemLimit(body)
+	data, _ := json.MarshalIndent(limit, "", "  ")
+	_ = ioutil.WriteFile(filepath.Join(path, "/.config"), data, 0644)
 
 	path = filepath.Join(path, "/Tests")
 	if err = os.Mkdir(path, os.ModePerm); err != nil {

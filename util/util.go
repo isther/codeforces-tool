@@ -2,6 +2,7 @@ package util
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"math/rand"
@@ -111,4 +112,16 @@ func homeWindows() (string, error) {
 	}
 
 	return home, nil
+}
+
+func Load(filename string, v interface{}) {
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return
+	}
+
+	err = json.Unmarshal(data, v)
+	if err != nil {
+		return
+	}
 }
