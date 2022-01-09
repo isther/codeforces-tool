@@ -1,5 +1,11 @@
 # codeforces-tool
 
+<div align="center">
+
+<a href="https://github.com/isther/codeforces-tool"><img src="https://img.shields.io/github/repo-size/isther/codeforces-tool?style=flat-square&label=Repo" alt="GitHub repository size"/></a>
+<a href="https://github.com/isther/codeforces-tool/blob/master/LICENSE"><img src="https://img.shields.io/github/license/isther/codeforces-tool?style=flat-square&logo=GNU&label=License" alt="License" />
+</div>
+
 This is a tool for codeforces, currently under development...
 
 ![](https://www.niuwx.cn/cloudimg/use.gif)
