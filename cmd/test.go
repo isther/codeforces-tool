@@ -3,7 +3,6 @@ package cmd
 import (
 	"bufio"
 	"bytes"
-	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -12,7 +11,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"syscall"
 	"time"
 	"unicode"
 
@@ -81,7 +79,7 @@ func Test() (err error) {
 	}
 
 	var limit client.Limit
-	util.Load("./.config",&limit)
+	util.Load("./.config", &limit)
 
 	if s := filter(template.Script); len(s) > 0 {
 		for _, i := range samples {
@@ -158,25 +156,33 @@ func judge(sampleID, command string, duration time.Duration) error {
 
 	pid := cmd.Process.Pid
 	maxMemory := uint64(0)
-	ch := make(chan error)
+	reCh := make(chan error)
 	go func() {
-		ch <- cmd.Wait()
+		reCh <- cmd.Wait()
 	}()
 
-	ctx := context.Background()
-	ctxWithTimeOut, ctxCancleFunc := context.WithTimeout(ctx, duration)
-	defer ctxCancleFunc()
+	tleCh := make(chan error)
+	time.AfterFunc(duration, func() {
+		p, err := process.NewProcess(int32(pid))
+		if err == nil {
+			ch, _ := p.Children()
+			for _, v := range ch {
+				v.Kill()
+			}
+		}
+		cmd.Process.Kill()
+		tleCh <- fmt.Errorf("timeout")
+	})
 
 	running := true
 	for running {
 		select {
-		case err := <-ch:
+		case err := <-reCh:
 			if err != nil {
 				return fmt.Errorf("Runtime Error #%v ... %v", sampleID, err.Error())
 			}
 			running = false
-		case <-ctxWithTimeOut.Done():
-			_ = syscall.Kill(pid, syscall.SIGKILL)
+		case <-tleCh:
 			return fmt.Errorf("Time out")
 		default:
 			p, err := process.NewProcess(int32(pid))
