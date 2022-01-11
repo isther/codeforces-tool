@@ -18,14 +18,14 @@ type templatePath struct {
 
 var egList = map[string]string{
 	"langs":        `e.g. "42" `,
-	"templatepath": `e.g. "~/home/ther/codeforces/template/template.cpp" `,
+	"templatepath": `e.g. "/home/ther/cf/template/template.cpp" `,
 	"suffix":       `e.g. "cxx cc"`,
 	"alias":        `e.g. "cpp" "py"`,
 	"email":        `e.g. "28251536@qq.com"`,
 	"password":     `e.g. "1234567890"`,
-	"beforeScript": `e.g. "g++ $%full%$ -o $%file%$.exe -std=c++11"), empty is ok:`,
-	"script":       `"./$%file%$.exe" "python3 $%full%$"):`,
-	"afterScript":  `"rm $%file%$.exe" or "cmd.exe /C del $%file%$.exe" in windows), empty is ok:`,
+	"beforeScript": `e.g. "g++ -o $%file%$ $%full%$  -std=c++11"), empty is ok:`,
+	"script":       `"./$%file%$" "python3 $%full%$"):`,
+	"afterScript":  `"rm $%file%$" or "cmd.exe /C del $%file%$.exe" in windows), empty is ok:`,
 }
 
 var tipList = map[string]string{

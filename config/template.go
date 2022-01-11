@@ -13,41 +13,6 @@ import (
 	"github.com/fatih/color"
 )
 
-var (
-	notePlaceHolders = `Template:
-  You can insert some placeholders into your template code. When generate a code from the
-  template, cf will replace all placeholders by following rules:
-
-  $%U%$   Handle (e.g. ther)
-  $%Y%$   Year   (e.g. 2021)
-  $%M%$   Month  (e.g. 12)
-  $%D%$   Day    (e.g. 11)
-  $%h%$   Hour   (e.g. 13)
-  $%m%$   Minute (e.g. 30)
-  $%s%$   Second (e.g. 05)
-  $%path%$   Path to source file (Excluding $%full%$, e.g. "/home/ther/codeforces/contest/1806")
-  $%full%$   Full name of source file (e.g. "a.cpp")
-  $%file%$   Name of source file (Excluding suffix, e.g. "a")
-  $%rand%$   Random string with 8 character (including "a-z" "0-9") `
-
-	scriptNote = `
-Template will run 3 scripts in sequence when you run "cf test":
-    - before_script   (execute once)
-    - script          (execute the number of samples times)
-    - after_script    (execute once)
-  You could set "before_script" or "after_script" to empty string, meaning not executing.
-  You have to run your program in "script" with standard input/output (no need to redirect).
-
-  You can insert some placeholders in your scripts. When execute a script,
-  cf will replace all placeholders by following rules:
-
-  $%path%$   Path to source file (Excluding $%full%$, e.g. "/home/28251536/")
-  $%full%$   Full name of source file (e.g. "a.cpp")
-  $%file%$   Name of source file (Excluding suffix, e.g. "a")
-  $%rand%$   Random string with 8 character (including "a-z" "0-9")
-`
-)
-
 //Add a template
 func (c *Config) AddTemplate() error {
 	color.Cyan("Add a template")
@@ -78,7 +43,6 @@ func (c *Config) AddTemplate() error {
 
 	//Set the template source file path
 	path := ""
-	color.Cyan(notePlaceHolders)
 	for {
 		path = options.ChooseString("templatepath")
 		//Exit
@@ -119,12 +83,12 @@ func (c *Config) AddTemplate() error {
 	}
 
 	//Set script
-	color.Cyan("Set template script: ")
-	color.Cyan(scriptNote)
-	//BeforeScript
-	beforeScript := options.ChooseString("beforeScript")
-	//Script
+	beforeScript := ""
 	script := ""
+	afterScript := ""
+	//BeforeScript
+	beforeScript = options.ChooseString("beforeScript")
+	//Script
 	for {
 		script = options.ChooseString("script")
 		if len(script) > 0 {
@@ -134,12 +98,11 @@ func (c *Config) AddTemplate() error {
 		color.Red("Script can not empty. Please input again")
 	}
 	//AfterScript
-	afterScript := options.ChooseString("afterScript")
+	afterScript = options.ChooseString("afterScript")
 	c.Template = append(c.Template, CodeTemplate{
 		alias, lang, path, suffix,
 		beforeScript, script, afterScript,
 	})
-
 	return c.save()
 }
 
