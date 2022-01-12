@@ -3,8 +3,11 @@
 **This is a tool for codeforces contest.**
 
 <div align="center">
+
 <a href="https://github.com/isther/codeforces-tool"><img src="https://img.shields.io/github/repo-size/isther/codeforces-tool?style=flat-square&label=Repo" alt="GitHub repository size"/></a>
 <a href="https://github.com/isther/codeforces-tool/blob/master/LICENSE"><img src="https://img.shields.io/github/license/isther/codeforces-tool?style=flat-square&logo=GNU&label=License" alt="License" /></a>
+[![Go Report Card](https://goreportcard.com/badge/github.com/28251536/codeforces-tool)](https://goreportcard.com/report/github.com/28251536/codeforces-tool)
+
 </div>
 
 ![use](./image/use.gif)
